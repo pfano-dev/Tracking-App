@@ -1,0 +1,13 @@
+# Node
+node_modules/
+.next/
+
+# .NET
+bin/
+obj/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
