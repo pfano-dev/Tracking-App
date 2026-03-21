@@ -9,6 +9,6 @@ namespace Tracking_App_Backend.Application.Interfaces
         Task<WorkItem?> GetByIdAsync(Guid id);
         Task<WorkItem> CreateAsync(string title, string description);
         Task<WorkItem?> UpdateAsync(Guid id, string title, string description, WorkItemStatus status);
-        Task<bool> DeleteAsync(Guid id);
+        Task DeleteAsync(Guid id);
     }
 }

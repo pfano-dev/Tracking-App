@@ -1,3 +1,4 @@
+using Tracking_App_Backend.API.Middleware;
 using Tracking_App_Backend.Application.Interfaces;
 using Tracking_App_Backend.Application.Services;
 using Tracking_App_Backend.Infrastructure.Repositories;
@@ -6,7 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
 builder.Services.AddScoped<IWorkItemService, WorkItemService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -26,6 +32,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();

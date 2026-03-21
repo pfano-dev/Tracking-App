@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Tracking_App_Backend.Application.Common;
 using Tracking_App_Backend.Application.DTOs;
 using Tracking_App_Backend.Application.Interfaces;
 using Tracking_App_Backend.Domain.Entities;
@@ -26,23 +27,25 @@ namespace Tracking_App_Backend.API.Controllers
             [FromQuery] string? order)
         {
             var items = await _service.GetAllAsync(status, sortBy, order);
-            return Ok(items);
+
+            return Ok(ApiResponse<List<WorkItem>>.SuccessResponse(items));
         }
 
         [HttpGet("get-item/{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
             var item = await _service.GetByIdAsync(id);
-            if (item == null) return NotFound();
 
-            return Ok(item);
+            return Ok(ApiResponse<WorkItem>.SuccessResponse(item));
         }
 
         [HttpPost("create-item")]
         public async Task<IActionResult> Create([FromBody] CreateWorkItemRequestDto request)
         {
             var item = await _service.CreateAsync(request.Title, request.Description);
-            return CreatedAtAction(nameof(Get), new { id = item.Id }, item);
+            return CreatedAtAction(nameof(Get),
+         new { id = item.Id },
+         ApiResponse<WorkItem>.SuccessResponse(item));
         }
 
         [HttpPut("edit-item/{id}")]
@@ -50,18 +53,15 @@ namespace Tracking_App_Backend.API.Controllers
         {
             var item = await _service.UpdateAsync(id, request.Title, request.Description, request.Status);
 
-            if (item == null) return NotFound();
-
-            return Ok(item);
+            return Ok(ApiResponse<WorkItem>.SuccessResponse(item));
         }
 
         [HttpDelete("delete-item/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var success = await _service.DeleteAsync(id);
-            if (!success) return NotFound();
+            await _service.DeleteAsync(id);
 
-            return NoContent();
+            return Ok(ApiResponse<string>.SuccessResponse("Deleted successfully"));
         }
     }
 
