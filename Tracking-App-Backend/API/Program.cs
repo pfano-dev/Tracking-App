@@ -15,9 +15,20 @@ builder.Services.AddControllers()
     });
 builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
 builder.Services.AddScoped<IWorkItemService, WorkItemService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
 
@@ -28,8 +39,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
+app.UseMiddleware<FakeAuthMiddleware>();
 app.UseAuthorization();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
