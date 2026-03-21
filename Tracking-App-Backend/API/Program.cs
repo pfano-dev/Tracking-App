@@ -1,8 +1,14 @@
+using Tracking_App_Backend.Application.Interfaces;
+using Tracking_App_Backend.Application.Services;
+using Tracking_App_Backend.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IWorkItemRepository, InMemoryWorkItemRepository>();
+builder.Services.AddScoped<IWorkItemService, WorkItemService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
