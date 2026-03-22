@@ -1,6 +1,9 @@
 // /components/ui/Textarea.tsx
 "use client";
 
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState } from "react";
+
 type TextareaProps = {
   placeholder?: string;
   value: string;
@@ -22,7 +25,7 @@ type Option = {
 
 type SelectProps = {
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (value: string) => void;
   options: Option[];
   label?: string;
 };
@@ -42,28 +45,51 @@ export function Textarea({
         value={value}
         onChange={onChange}
         rows={4}
-        className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-orange-300"
       />
     </div>
   );
 }
 
 export function Select({ value, onChange, options, label }: SelectProps) {
-  return (
-    <div className="flex flex-col gap-1">
-      {label && <label className="text-sm text-gray-600">{label}</label>}
+  const [open, setOpen] = useState(false);
 
-      <select
-        value={value}
-        onChange={onChange}
-        className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  const selected = options.find((opt) => opt.value === value);
+
+  return (
+    <div className="relative w-full">
+      {label && (
+        <label className="text-sm text-gray-600 mb-1 block">{label}</label>
+      )}
+
+      {/* Trigger */}
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-3 py-2 border rounded-lg bg-white text-left flex justify-between items-center"
       >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+        <span>{selected?.label}</span>
+        {!open ? <ChevronDown className="rotate-180" /> : <ChevronUp />}
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute z-10 mt-2 w-full bg-white  rounded-lg shadow-lg">
+          {options.map((opt) => (
+            <div
+              key={opt.value}
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
+                value === opt.value ? "bg-gray-100 font-medium" : ""
+              }`}
+            >
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -77,7 +103,7 @@ export function Input({ placeholder, value, onChange, label }: InputProps) {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-orange-300"
       />
     </div>
   );

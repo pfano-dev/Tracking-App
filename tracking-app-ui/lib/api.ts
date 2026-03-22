@@ -3,11 +3,33 @@ const headers = {
   Authorization: "Bearer test-token",
 };
 
-console.log("base_url", process.env.NEXT_PUBLIC_BASE_API_URL);
+/**
+ * Fetch all work items from the API.
+ * @param {Object} params - Optional parameters to filter the results.
+ * @param {string} params.status - Filter by status.
+ * @param {string} params.sortBy - Sort by field.
+ * @param {string} params.order - Sort order.
+ * @returns {Promise<any>} Resolves with the response data from the API.
+ */
+export async function getWorkItems(params?: {
+  status?: string;
+  sortBy?: string;
+  order?: string;
+}) {
+  const query = new URLSearchParams();
+  if (params?.status && params.status !== "all") {
+    query.append("status", params.status);
+  }
 
-export async function getWorkItems() {
+  if (params?.sortBy) {
+    query.append("sortBy", params.sortBy);
+  }
+
+  if (params?.order) {
+    query.append("order", params.order);
+  }
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}/get-all-items`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}/get-all-items?${query.toString()}`,
     {
       headers,
     },
@@ -52,7 +74,7 @@ export async function updateWorkItem(id: string, data: any) {
 }
 
 export async function deleteWorkItem(id: string) {
-  await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/delete-item}/${id}`, {
+  await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/delete-item/${id}`, {
     method: "DELETE",
     headers,
   });

@@ -23,7 +23,7 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
           height={25}
           width={25}
         />
-        <h1 className="text-md font-100">Mukuru</h1>
+        <h1 className="text-bg font-bold">Mukuru</h1>
       </div>
 
       <nav className="flex flex-col gap-2">
