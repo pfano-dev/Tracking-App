@@ -17,38 +17,94 @@ export default function EditWorkItemForm() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
 
+  const [errors, setErrors] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const validateForm = () => {
+    const newErrors: string[] = [];
+
+    if (!title.trim()) newErrors.push("Title is required");
+    if (title.trim().length < 3)
+      newErrors.push("Title must be at least 3 characters");
+
+    if (!description.trim()) newErrors.push("Description is required");
+
+    if (!status) newErrors.push("Status is required");
+
+    setErrors(newErrors);
+    return newErrors.length === 0;
+  };
+
   useEffect(() => {
     const loadItem = async () => {
       try {
-        const res = await getWorkItem(id as string);
-        const item = res.data;
+        setInitialLoading(true);
+        setError(null);
 
-        setTitle(item.title || "");
-        setDescription(item.description || "");
-        setStatus(item.status || "open");
-      } catch (err) {
+        const res = await getWorkItem(id as string);
+
+        if (!res) {
+          throw new Error("No response from server");
+        }
+
+        const success = res.success ?? res.Success;
+        const data = res.data ?? res.Data;
+        const errors = res.errors ?? res.Errors;
+
+        if (!success) {
+          setError(errors?.[0] || "Failed to load item");
+          return;
+        }
+
+        if (!data) {
+          setError("Invalid data received");
+          return;
+        }
+
+        setTitle(data.title || "");
+        setDescription(data.description || "");
+        setStatus(data.status || "Open");
+      } catch (err: any) {
         console.error(err);
+        setError(err.message || "Something went wrong");
       } finally {
         setInitialLoading(false);
       }
     };
 
-    loadItem();
+    if (id) loadItem();
   }, [id]);
 
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
     try {
       setLoading(true);
+      setError(null);
+      setErrors([]);
 
-      await updateWorkItem(id as string, {
+      const res = await updateWorkItem(id as string, {
         title,
         description,
         status,
       });
 
+      if (!res) {
+        throw new Error("No response from server");
+      }
+
+      const success = res.success ?? res.Success;
+      const apiErrors = res.errors ?? res.Errors;
+
+      if (!success) {
+        setErrors(apiErrors || ["Update failed"]);
+        return;
+      }
+
       router.push("/work-items");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setError(err.message || "Unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -58,11 +114,29 @@ export default function EditWorkItemForm() {
     <>
       {initialLoading ? (
         <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow">
-          <p className="text-center">Loading work item...</p>
+          <p className="text-center text-gray-500">Loading work item...</p>
+        </div>
+      ) : error ? (
+        <div className="max-w-md mx-auto p-6 bg-white rounded-2xl shadow">
+          <p className="text-center text-red-500">{error}</p>
         </div>
       ) : (
         <div className="max-w-md mt-4 mx-auto p-6 space-y-4 bg-white rounded-2xl shadow">
           <h1 className="text-2xl font-bold">Edit Work Item</h1>
+
+          {error && (
+            <div className="p-3 bg-red-100 text-red-700 rounded">{error}</div>
+          )}
+
+          {errors.length > 0 && (
+            <div className="p-3 bg-red-100 text-red-700 rounded">
+              <ul className="list-disc pl-5">
+                {errors.map((err, i) => (
+                  <li key={i}>{err}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <Input
             label="Title"

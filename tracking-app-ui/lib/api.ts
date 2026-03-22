@@ -66,8 +66,12 @@ export async function updateWorkItem(id: string, data: any) {
 }
 
 export async function deleteWorkItem(id: string) {
-  await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/delete-item/${id}`, {
-    method: "DELETE",
-    headers,
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}/delete-item/${id}`,
+    {
+      method: "DELETE",
+      headers,
+    },
+  );
+  return res.json();
 }

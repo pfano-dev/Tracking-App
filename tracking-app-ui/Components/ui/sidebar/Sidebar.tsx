@@ -18,14 +18,22 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchItems = async () => {
     setLoading(true);
-    const res = await getWorkItems();
-    setItems(res.data || []);
-    setLoading(false);
-  };
+    setError(null);
 
+    try {
+      const res = await getWorkItems();
+      setItems(res.data || []);
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to load work items");
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     fetchItems();
   }, []);
@@ -39,18 +47,18 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
-          fixed md:static top-0 left-0 z-50
-         w-64 bg-white text-orange-500 flex flex-col p-4
-          transform transition-transform duration-300
-          ${open ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0
-        `}
+  fixed md:static top-0 left-0 z-50
+  w-64 h-screen md:h-auto overflow-y-auto
+  bg-white text-orange-500 flex flex-col p-4
+  transform transition-transform duration-300
+  ${open ? "translate-x-0" : "-translate-x-full"}
+  md:translate-x-0
+`}
       >
         <div className="md:hidden flex items-center justify-between mb-4">
-          <h1 className="font-bold">Menu</h1>
+          <h1 className="font-bold"></h1>
           <button onClick={() => setOpen(false)}>✕</button>
         </div>
 
@@ -102,11 +110,16 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
           </div>
 
           <div className="flex flex-col gap-2">
+            {error && (
+              <div className="mb-2 w-full p-2 bg-red-100 text-red-700 rounded text-sm">
+                {error}
+              </div>
+            )}
             {loading ? (
               <p className="text-gray-500 text-sm">Loading...</p>
             ) : (
               <>
-                {items.length === 0 && (
+                {items.length === 0 && !error && (
                   <p className="text-gray-500 text-sm">No recent items</p>
                 )}
 

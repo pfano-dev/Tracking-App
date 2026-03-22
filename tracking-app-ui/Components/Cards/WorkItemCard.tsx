@@ -38,7 +38,7 @@ export default function WorkItemCard({ item, onDelete }: any) {
           text="Edit"
           variant="success"
           icon={<Pencil />}
-          textColor={""}
+          textColor={"text-orange-500"}
         />
 
         <Button

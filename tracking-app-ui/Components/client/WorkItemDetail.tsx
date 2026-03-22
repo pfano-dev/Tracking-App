@@ -5,6 +5,7 @@ import { deleteWorkItem, getWorkItem } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
 import LinkButton from "../buttons/LinkButton";
 import Button from "../buttons/Button";
+import { Pencil } from "lucide-react";
 
 export default function WorkItemDetail() {
   const { id } = useParams();
@@ -12,20 +13,48 @@ export default function WorkItemDetail() {
   const [item, setItem] = useState<any>(null);
   const [selected, setSelected] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchItem = async () => {
       try {
+        setLoading(true);
+        setError(null);
+
         const res = await getWorkItem(id as string);
-        setItem(res.data);
-      } catch (err) {
+
+        if (!res) {
+          throw new Error("No response from server");
+        }
+
+        const success = res.success ?? res.Success;
+        const data = res.data ?? res.Data;
+        const errors = res.errors ?? res.Errors;
+
+        if (!success) {
+          setError(errors?.[0] || "Failed to fetch item");
+          setItem(null);
+          return;
+        }
+
+        if (!data || typeof data !== "object") {
+          setError("Invalid data received from server");
+          setItem(null);
+          return;
+        }
+
+        setItem(data);
+      } catch (err: any) {
         console.error(err);
+        setError(err.message || "Something went wrong");
+        setItem(null);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchItem();
+    if (id) fetchItem();
   }, [id]);
 
   if (loading) {
@@ -43,14 +72,35 @@ export default function WorkItemDetail() {
   const handleDelete = async () => {
     if (!id) return;
 
-    await deleteWorkItem(id as string);
-    setSelected(true);
-    router.push("/work-items");
+    try {
+      setDeleting(true);
+      setError(null);
+
+      const res = await deleteWorkItem(id as string);
+
+      const success = res?.success ?? res?.Success;
+      const errors = res?.errors ?? res?.Errors;
+
+      if (!success) {
+        setError(errors?.[0] || "Failed to delete item");
+        return;
+      }
+
+      router.push("/work-items");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Delete failed");
+    } finally {
+      setDeleting(false);
+      setSelected(false);
+    }
   };
 
-  if (!item) {
+  if (!item && !loading) {
     return (
-      <p className="text-center mt-10 text-red-500">Failed to load item.</p>
+      <div className="mb-4 mt-4 w-full text-center p-3 bg-red-100 text-red-700 rounded">
+        {error || "Failed to load item."}
+      </div>
     );
   }
 
@@ -65,6 +115,12 @@ export default function WorkItemDetail() {
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow space-y-4">
+      {error && (
+        <div className="max-w-xl mx-auto mt-6 p-3 bg-red-100 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
       <h1 className="text-3xl font-bold text-gray-800">{item.title}</h1>
 
       <div className="flex items-center justify-between">
@@ -88,7 +144,8 @@ export default function WorkItemDetail() {
           href={`/work-items/edit/${item.id}`}
           text="Edit"
           variant="success"
-          textColor={""}
+          icon={<Pencil />}
+          textColor={"text-orange-500"}
         />
 
         <Button
@@ -114,7 +171,12 @@ export default function WorkItemDetail() {
                 onClick={() => setSelected(false)}
               />
 
-              <Button text="Delete" variant="danger" onClick={handleDelete} />
+              <Button
+                text={deleting ? "Deleting..." : "Delete"}
+                variant="danger"
+                onClick={handleDelete}
+                disabled={deleting}
+              />
             </div>
           </div>
         </div>

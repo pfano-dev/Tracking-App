@@ -16,17 +16,50 @@ export default function WorkItemsClient() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("createdat");
   const [order, setOrder] = useState("desc");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchItems = async () => {
-    const res = await getWorkItems({
-      status: statusFilter,
-      sortBy,
-      order,
-    });
+    try {
+      setLoading(true);
+      setError(null);
 
-    setItems(res.data || []);
+      const res = await getWorkItems({
+        status: statusFilter,
+        sortBy,
+        order,
+      });
+
+      if (!res) {
+        throw new Error("No response from server");
+      }
+
+      const success = res.success ?? res.Success;
+      const data = res.data ?? res.Data;
+      const errors = res.errors ?? res.Errors;
+
+      if (!success) {
+        setError(errors?.[0] || "Failed to fetch work items");
+        setItems([]);
+        return;
+      }
+
+      if (!Array.isArray(data)) {
+        setError("Invalid data format from server");
+        setItems([]);
+        return;
+      }
+
+      setItems(data);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Something went wrong while fetching items");
+      setItems([]);
+    } finally {
+      setLoading(false);
+    }
   };
-
   useEffect(() => {
     fetchItems();
   }, [statusFilter, sortBy, order]);
@@ -34,9 +67,28 @@ export default function WorkItemsClient() {
   const handleDelete = async () => {
     if (!selectedId) return;
 
-    await deleteWorkItem(selectedId);
-    setSelectedId(null);
-    fetchItems();
+    try {
+      setDeleting(true);
+      setError(null);
+
+      const res = await deleteWorkItem(selectedId);
+
+      const success = res?.success ?? res?.Success;
+      const errors = res?.errors ?? res?.Errors;
+
+      if (!success) {
+        setError(errors?.[0] || "Failed to delete item");
+        return;
+      }
+
+      setSelectedId(null);
+      fetchItems();
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Delete failed");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const filteredItems = items.filter((item) =>
@@ -109,12 +161,21 @@ export default function WorkItemsClient() {
         </div>
       </div>
 
-      {!filteredItems.length && (
+      {!loading && !error && !filteredItems.length && (
         <div className="text-center text-gray-500 mt-10">
           No work items found.
         </div>
       )}
-
+      {loading && (
+        <div className="text-center text-gray-500 mt-6">
+          Loading work items...
+        </div>
+      )}
+      {error && (
+        <div className="mb-4 w-full text-center p-3 bg-red-100 text-red-700 rounded">
+          {error}
+        </div>
+      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {filteredItems.map((item) => (
           <WorkItemCard
@@ -143,7 +204,12 @@ export default function WorkItemsClient() {
                 onClick={() => setSelectedId(null)}
               />
 
-              <Button text="Delete" variant="danger" onClick={handleDelete} />
+              <Button
+                text={deleting ? "Deleting..." : "Delete"}
+                variant="danger"
+                onClick={handleDelete}
+                disabled={deleting}
+              />
             </div>
           </div>
         </div>
