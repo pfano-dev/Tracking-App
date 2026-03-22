@@ -2,7 +2,7 @@
 "use client";
 
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type TextareaProps = {
   placeholder?: string;
@@ -45,7 +45,7 @@ export function Textarea({
         value={value}
         onChange={onChange}
         rows={4}
-        className="px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-orange-300"
+        className="px-3 py-2 rounded-lg bg-gray-100 outline-none focus:ring-1 focus:ring-orange-300"
       />
     </div>
   );
@@ -68,7 +68,11 @@ export function Select({ value, onChange, options, label }: SelectProps) {
         className="w-full px-3 py-2 border rounded-lg bg-white text-left flex justify-between items-center"
       >
         <span>{selected?.label}</span>
-        {!open ? <ChevronDown className="rotate-180" /> : <ChevronUp />}
+        <ChevronDown
+          className={`transition-transform duration-200 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {/* Dropdown */}
@@ -103,7 +107,7 @@ export function Input({ placeholder, value, onChange, label }: InputProps) {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="px-3 py-2 rounded-lg outline-none focus:ring-1 focus:ring-orange-300"
+        className="px-3 py-2 bg-gray-100 rounded-lg outline-none focus:ring-1 focus:ring-orange-300"
       />
     </div>
   );

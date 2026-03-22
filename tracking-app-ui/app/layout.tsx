@@ -23,19 +23,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const recentItems = [
-    { id: "1", title: "Fix login bug" },
-    { id: "2", title: "Update dashboard UI" },
-    { id: "3", title: "Write API docs" },
-  ];
-
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex">
-        <Sidebar recentItems={recentItems} />
+        <Sidebar />
         <main className="w-full  bg-gray-100">{children}</main>
       </body>
     </html>

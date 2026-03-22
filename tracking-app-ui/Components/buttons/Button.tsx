@@ -10,7 +10,7 @@ type ButtonProps = {
 
 const variants = {
   primary: "bg-blue-500 hover:bg-blue-600 text-white",
-  success: "bg-green-500 hover:bg-green-600 text-white",
+  success: "bg-orange-500 hover:bg-orange-300 text-white",
   danger: "bg-red-500 hover:bg-red-600 text-white",
   outline: "border border-gray-400 text-gray-700 hover:bg-gray-100",
 };

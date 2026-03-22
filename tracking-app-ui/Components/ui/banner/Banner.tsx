@@ -16,7 +16,6 @@ const Banner: React.FC<BannerProps> = ({
   image,
   height = "h-64",
   overlayClassName = "bg-black/50",
-  className = "",
 }) => {
   return (
     <div

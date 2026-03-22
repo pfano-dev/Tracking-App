@@ -13,9 +13,9 @@ export default function WorkItemCard({ item, onDelete }: any) {
 
   return (
     <div className="bg-white shadow-md rounded-2xl p-5 hover:shadow-lg transition">
-      <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+      <h3 className="text-xl font-semibold mb-2 truncate">{item.title}</h3>
 
-      <p className="text-gray-600 mb-3">{item.description}</p>
+      <p className="text-gray-600 mb-3 truncate">{item.description}</p>
 
       <span
         className={`text-sm font-medium px-3 py-1 rounded-full ${statusStyles}`}
