@@ -18,7 +18,7 @@ namespace Tracking_App_Backend.API.Middleware
 
             var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
 
-            if (string.IsNullOrWhiteSpace(authHeader) || authHeader != "Bearer fake-token")
+            if (string.IsNullOrWhiteSpace(authHeader) || authHeader != "Bearer test-token")
             {
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
                 context.Response.ContentType = "application/json";
