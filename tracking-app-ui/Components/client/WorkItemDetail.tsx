@@ -54,10 +54,8 @@ export default function WorkItemDetail() {
     );
   }
 
-  // ✅ Format date nicely
   const formattedDate = new Date(item.createdAt).toLocaleString();
 
-  // ✅ Status color styling
   const statusColor =
     item.status.toLowerCase() === "completed"
       ? "bg-green-100 text-green-700"

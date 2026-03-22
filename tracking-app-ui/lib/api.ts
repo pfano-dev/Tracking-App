@@ -3,14 +3,6 @@ const headers = {
   Authorization: "Bearer test-token",
 };
 
-/**
- * Fetch all work items from the API.
- * @param {Object} params - Optional parameters to filter the results.
- * @param {string} params.status - Filter by status.
- * @param {string} params.sortBy - Sort by field.
- * @param {string} params.order - Sort order.
- * @returns {Promise<any>} Resolves with the response data from the API.
- */
 export async function getWorkItems(params?: {
   status?: string;
   sortBy?: string;

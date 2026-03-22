@@ -5,7 +5,7 @@ type BannerProps = {
   title: string;
   subtitle: string;
   image: string;
-  height?: string; // Tailwind height class (e.g. "h-64", "h-[400px]")
+  height?: string;
   overlayClassName?: string;
   className?: string;
 };
@@ -21,7 +21,6 @@ const Banner: React.FC<BannerProps> = ({
     <div
       className={`relative w-full ${height} flex items-center justify-center text-center text-white rounded-xl overflow-hidden`}
     >
-      {/* Background Image */}
       <Image
         src={image}
         alt="Banner Background"
@@ -30,10 +29,8 @@ const Banner: React.FC<BannerProps> = ({
         priority
       />
 
-      {/* Overlay */}
       <div className={`absolute inset-0 ${overlayClassName}`} />
 
-      {/* Content */}
       <div className="relative z-10 px-4">
         <h1 className="text-3xl md:text-4xl font-bold">{title}</h1>
         <p className="mt-2 text-lg">{subtitle}</p>

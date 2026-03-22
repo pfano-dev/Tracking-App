@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, List, PlusCircle, RefreshCcw } from "lucide-react";
+import { Home, List, PlusCircle, RefreshCcw, Menu } from "lucide-react";
 import { getWorkItems } from "@/lib/api";
 import { useEffect, useState } from "react";
 
@@ -17,10 +17,11 @@ type SidebarProps = {
 export default function Sidebar({ recentItems = [] }: SidebarProps) {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+
   const fetchItems = async () => {
     setLoading(true);
     const res = await getWorkItems();
-
     setItems(res.data || []);
     setLoading(false);
   };
@@ -30,82 +31,107 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
   }, []);
 
   return (
-    <aside className="w-64 h-screen bg-white   text-orange-500  flex flex-col p-4">
-      <div className="flex items-center  gap-2 mb-8">
-        <img
-          src="/mukuru.png"
-          alt="Mukuru Logo"
-          className="w-8 h-8"
-          height={25}
-          width={25}
+    <>
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
+          onClick={() => setOpen(false)}
         />
-        <h1 className="text-bg font-bold">Mukuru</h1>
-      </div>
+      )}
 
-      <nav className="flex flex-col gap-2">
-        <Link
-          href="/"
-          className="flex items-center gap-2 p-2 rounded-lg hover:bg-orange-100"
-        >
-          <Home size={18} />
-          Home
-        </Link>
+      {/* Sidebar */}
+      <aside
+        className={`
+          fixed md:static top-0 left-0 z-50
+         w-64 bg-white text-orange-500 flex flex-col p-4
+          transform transition-transform duration-300
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+        `}
+      >
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <h1 className="font-bold">Menu</h1>
+          <button onClick={() => setOpen(false)}>✕</button>
+        </div>
 
-        <Link
-          href="/create"
-          className="flex items-center gap-2 p-2 rounded-lg hover:bg-orange-100"
-        >
-          <PlusCircle size={18} />
-          Create
-        </Link>
+        <div className="flex items-center gap-2 mb-8">
+          <img src="/mukuru.png" alt="Mukuru Logo" className="w-8 h-8" />
+          <h1 className="font-bold">Mukuru</h1>
+        </div>
 
-        <Link
-          href="/work-items"
-          className="flex items-center gap-2 p-2 rounded-lg hover:bg-orange-100"
-        >
-          <List size={18} />
-          work item list
-        </Link>
-      </nav>
-
-      <div className="mt-8">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm text-gray-400">Recent</h2>
-
-          <button
-            onClick={fetchItems}
-            className="p-1 rounded hover:bg-orange-100 transition"
-            title="Refresh"
+        <nav className="flex flex-col gap-2">
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 p-2 rounded-lg hover:bg-orange-100 transition"
           >
-            <RefreshCcw
-              size={16}
-              className={`${loading ? "animate-spin" : ""}`}
-            />
-          </button>
-        </div>
+            <Home size={18} />
+            Home
+          </Link>
 
-        <div className="flex flex-col gap-2">
-          {loading ? (
-            <p className="text-gray-500 text-sm">Loading...</p>
-          ) : (
-            <>
-              {" "}
-              {items.length === 0 && (
-                <p className="text-gray-500 text-sm">No recent items</p>
-              )}
-              {items.slice(0, 3).map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/work-items/${item.id}`}
-                  className="p-2 rounded-lg hover:bg-orange-100 text-sm truncate"
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </>
-          )}
+          <Link
+            href="/create"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 p-2 rounded-lg hover:bg-orange-100 transition"
+          >
+            <PlusCircle size={18} />
+            Create
+          </Link>
+
+          <Link
+            href="/work-items"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2 p-2 rounded-lg hover:bg-orange-100 transition"
+          >
+            <List size={18} />
+            Work item list
+          </Link>
+        </nav>
+
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-sm text-gray-400">Recent</h2>
+
+            <button
+              onClick={fetchItems}
+              disabled={loading}
+              className="p-1 rounded hover:bg-orange-100 transition disabled:opacity-50"
+            >
+              <RefreshCcw size={16} className={loading ? "animate-spin" : ""} />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            {loading ? (
+              <p className="text-gray-500 text-sm">Loading...</p>
+            ) : (
+              <>
+                {items.length === 0 && (
+                  <p className="text-gray-500 text-sm">No recent items</p>
+                )}
+
+                {items.slice(0, 3).map((item) => (
+                  <Link
+                    key={item.id}
+                    href={`/work-items/${item.id}`}
+                    onClick={() => setOpen(false)}
+                    className="p-2 rounded-lg hover:bg-orange-100 text-sm truncate"
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </>
+            )}
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      <button
+        onClick={() => setOpen(true)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow"
+      >
+        <Menu />
+      </button>
+    </>
   );
 }

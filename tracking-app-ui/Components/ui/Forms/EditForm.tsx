@@ -14,8 +14,8 @@ export default function EditWorkItemForm() {
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("");
 
-  const [loading, setLoading] = useState(false); // submit loading
-  const [initialLoading, setInitialLoading] = useState(true); // fetch loading
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     const loadItem = async () => {
@@ -29,7 +29,7 @@ export default function EditWorkItemForm() {
       } catch (err) {
         console.error(err);
       } finally {
-        setInitialLoading(false); // ✅ stop loading AFTER fetch
+        setInitialLoading(false);
       }
     };
 
@@ -90,7 +90,7 @@ export default function EditWorkItemForm() {
           <Button
             text={loading ? "Updating..." : "Update Work Item"}
             variant="success"
-            onClick={handleSubmit} // ✅ fixed
+            onClick={handleSubmit}
             disabled={loading}
           />
         </div>

@@ -2,6 +2,7 @@
 
 import LinkButton from "../buttons/LinkButton";
 import Button from "../buttons/Button";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 
 export default function WorkItemCard({ item, onDelete }: any) {
   const statusStyles =
@@ -28,6 +29,7 @@ export default function WorkItemCard({ item, onDelete }: any) {
           href={`/work-items/${item.id}`}
           text="View"
           textColor={"text-white"}
+          icon={<Eye />}
           variant="warning"
         />
 
@@ -35,6 +37,7 @@ export default function WorkItemCard({ item, onDelete }: any) {
           href={`/work-items/edit/${item.id}`}
           text="Edit"
           variant="success"
+          icon={<Pencil />}
           textColor={""}
         />
 

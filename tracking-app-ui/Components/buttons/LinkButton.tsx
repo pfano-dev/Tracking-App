@@ -5,7 +5,7 @@ import Link from "next/link";
 type LinkButtonProps = {
   href: string;
   text: string;
-  textColor: string;
+  textColor?: string;
   icon?: React.ReactNode;
   variant?: "primary" | "success" | "warning" | "danger";
   fullWidth?: boolean;
@@ -22,7 +22,7 @@ export default function LinkButton({
   href,
   text,
   icon,
-  textColor = " text-white",
+  textColor = "text-white",
   variant = "primary",
   fullWidth = false,
 }: LinkButtonProps) {
@@ -31,16 +31,18 @@ export default function LinkButton({
       href={href}
       className={`
         inline-flex items-center justify-center
-        px-4 py-2 rounded-xl
+        px-3 md:px-4 py-2 rounded-xl
         ${textColor}
         font-medium
         transition duration-200
         ${variants[variant]}
         ${fullWidth ? "w-full" : ""}
+        gap-2
       `}
     >
-      {icon && <span className="mr-2">{icon}</span>}
-      {text}
+      {icon && <span className="flex items-center">{icon}</span>}
+
+      <span className="hidden md:inline">{text}</span>
     </Link>
   );
 }

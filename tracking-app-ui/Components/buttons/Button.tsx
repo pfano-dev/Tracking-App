@@ -6,6 +6,7 @@ type ButtonProps = {
   variant?: "primary" | "success" | "danger" | "outline";
   disabled?: boolean;
   fullWidth?: boolean;
+  icon?: React.ReactNode;
 };
 
 const variants = {
@@ -18,6 +19,7 @@ const variants = {
 export default function Button({
   text,
   onClick,
+  icon,
   variant = "primary",
   disabled = false,
   fullWidth = false,
@@ -34,6 +36,7 @@ export default function Button({
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
+      {icon && <span className="flex items-center">{icon}</span>}
       {text}
     </button>
   );
