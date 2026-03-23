@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="container">
       <Banner
-        title="🛠 Work Item Tracker"
+        title="Work Item Tracker"
         subtitle="Manage your tasks efficiently."
         image="/mukurubanner.jpg"
         height="h-[300px]"
