@@ -19,11 +19,13 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showButton, setShowButton] = useState(true);
+
+  let inactivityTimer: NodeJS.Timeout;
 
   const fetchItems = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const res = await getWorkItems();
       setItems(res.data || []);
@@ -34,8 +36,28 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
       setLoading(false);
     }
   };
+
+  const resetTimer = () => {
+    setShowButton(true);
+    clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => setShowButton(false), 3000);
+  };
+
   useEffect(() => {
     fetchItems();
+
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("touchstart", resetTimer);
+    window.addEventListener("keydown", resetTimer);
+
+    resetTimer();
+
+    return () => {
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("touchstart", resetTimer);
+      window.removeEventListener("keydown", resetTimer);
+      clearTimeout(inactivityTimer);
+    };
   }, []);
 
   return (
@@ -49,13 +71,13 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
 
       <aside
         className={`
-  fixed md:static top-0 left-0 z-50
-  w-64 h-screen md:h-auto overflow-y-auto
-  bg-white text-orange-500 flex flex-col p-4
-  transform transition-transform duration-300
-  ${open ? "translate-x-0" : "-translate-x-full"}
-  md:translate-x-0
-`}
+          fixed md:static top-0 left-0 z-50
+          w-64 h-screen md:h-auto overflow-y-auto
+          bg-white text-orange-500 flex flex-col p-4
+          transform transition-transform duration-300
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+        `}
       >
         <div className="md:hidden flex items-center justify-between mb-4">
           <h1 className="font-bold"></h1>
@@ -139,12 +161,14 @@ export default function Sidebar({ recentItems = [] }: SidebarProps) {
         </div>
       </aside>
 
-      <button
-        onClick={() => setOpen(true)}
-        className="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow"
-      >
-        <Menu />
-      </button>
+      {showButton && (
+        <button
+          onClick={() => setOpen(true)}
+          className="md:hidden fixed top-4 left-4 z-50 bg-white p-2 rounded-lg shadow transition-opacity duration-500"
+        >
+          <Menu />
+        </button>
+      )}
     </>
   );
 }
