@@ -8,7 +8,7 @@ using Tracking_App_Backend.Domain.Enums;
 
 namespace Tracking_App_Backend.API.Controllers
 {
-    [Route("api/work-items")]
+    [Route("api/v1/work-items")]
     [ApiController]
     public class WorkItemsController : ControllerBase
     {

@@ -116,7 +116,7 @@ http://localhost:3000
 
 The frontend expects the backend to run on:
 
-https://localhost:7099/api/work-items
+https://localhost:7099/api/v1/work-items
 
 ## 🧪 Running Tests
 
@@ -136,13 +136,13 @@ cd tracking-app-ui
 npm run test
 ```
 
-| Method | Endpoint             | Description          |
-| ------ | -------------------- | -------------------- |
-| GET    | /api/work-items      | Get all work items   |
-| GET    | /api/work-items/{id} | Get single work item |
-| POST   | /api/work-items      | Create work item     |
-| PUT    | /api/work-items/{id} | Update work item     |
-| DELETE | /api/work-items/{id} | Delete work item     |
+| Method | Endpoint                | Description          |
+| ------ | ----------------------- | -------------------- |
+| GET    | /api/v1/work-items      | Get all work items   |
+| GET    | /api/v1/work-items/{id} | Get single work item |
+| POST   | /api/v1/work-items      | Create work item     |
+| PUT    | /api/v1/work-items/{id} | Update work item     |
+| DELETE | /api/v1/work-items/{id} | Delete work item     |
 
 ## 🔄 Data Persistence
 
